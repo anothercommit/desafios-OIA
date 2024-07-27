@@ -25,9 +25,9 @@ print(zetadietaLegible(88, 90, 50))
 def zetadietaConciso(C: int, P: int, G: int) -> int:
     # VERSION CONCISA
     return (
-        (math.ceil(C / BANANA["carbs"]) * BANANA["calorias"] if C > 0 else 0)
-        + (math.ceil(P / ATUN["proteinas"]) * ATUN["calorias"] if P > 0 else 0)
-        + (math.ceil(G / ACEITE["grasas"]) * ACEITE["calorias"] if G > 0 else 0)
+        (math.ceil(C / 27) * 105 if C > 0 else 0)  # bananas
+        + (math.ceil(P / 30) * 120 if P > 0 else 0)  # atun
+        + (math.ceil(G / 1) * 9 if G > 0 else 0)  # aceite de oliva
     )
 
 
