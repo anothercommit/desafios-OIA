@@ -29,14 +29,12 @@ int main() {
 
 int sanar(vector<int> fila, vector<int> col, vector<int> vidaInicial,
           vector<int> vidaActual, int d, vector<vector<char>> mapa) {
-  if (0 > fila[0] > mapa.size() || 0 > col[0] > mapa.size() ||
-      POSICION(0) == 'X')
+  if (0 > fila[0] > mapa.size() || 0 > col[0] > mapa.size())
+    return 0;
+  else if (POSICION(0) == 'X' || d == 0)
     return 0;
 
-  if (d == 0)
-    return 0;
-
-  POSICION(0) = 'x';
+  POSICION(0) = 'X';
   int maxHeal = 0;
 
   if (POSICION(0) != 'L')
