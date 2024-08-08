@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -11,16 +12,35 @@ int sanar(vector<int>, vector<int>, vector<int>, vector<int>, int,
 void printMapa(vector<vector<char>>);
 
 int main() {
-  vector<int> fila = {1, 1};
-  vector<int> col = {0, 2};
-  vector<int> vidaInicial = {10, 20};
-  vector<int> vidaActual = {6, 10};
-  int d = 3;
-  vector<vector<char>> mapa = {
-      {'.', 'X', '.'}, {'.', 'X', '.'}, {'.', '.', '.'}};
+  vector<int> fila;
+  vector<int> col;
+  vector<int> vidaInicial;
+  vector<int> vidaActual;
+  vector<vector<char>> mapa;
+
+  int n, r, c, d, num;
+  cin >> n >> r >> c;
+
+  for (--n; n >= 0; --n) {
+    fila.push_back((cin >> num, num));
+    col.push_back((cin >> num, num));
+    vidaInicial.push_back((cin >> num, num));
+    vidaActual.push_back((cin >> num, num));
+  }
+
+  cin >> d;
+
+  char ch;
+  for (int y = 0; y < r; ++y) {
+    mapa.push_back({});
+    for (int x = 0; x < c; ++x)
+      mapa[y].push_back((cin >> ch, ch));
+  }
 
   for (int i = 1; i < col.size(); ++i)
     POSICION(i) = 'L';
+
+  printMapa(mapa);
 
   cout << sanar(fila, col, vidaInicial, vidaActual, d, mapa) << '\n';
 
@@ -29,7 +49,8 @@ int main() {
 
 int sanar(vector<int> fila, vector<int> col, vector<int> vidaInicial,
           vector<int> vidaActual, int d, vector<vector<char>> mapa) {
-  if (0 > fila[0] > mapa.size() || 0 > col[0] > mapa.size())
+  if (0 > fila[0] || fila[0] >= mapa.size() || 0 > col[0] ||
+      col[0] >= mapa.size())
     return 0;
   else if (POSICION(0) == 'X' || d == 0)
     return 0;
@@ -44,6 +65,8 @@ int sanar(vector<int> fila, vector<int> col, vector<int> vidaInicial,
 
         posibleCuracion = posibleCuracion > 10 ? 10 : posibleCuracion;
         maxHeal = posibleCuracion > maxHeal ? posibleCuracion : maxHeal;
+        cout << "posibleCuracion = " << posibleCuracion << ' ';
+        cout << "maxHeal = " << maxHeal << endl;
       }
 
   fila[0] -= 1;
