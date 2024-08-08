@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -8,7 +7,6 @@ using namespace std;
 
 int sanar(vector<int>, vector<int>, vector<int>, vector<int>, int,
           vector<vector<char>>);
-
 void printMapa(vector<vector<char>>);
 
 int main() {
@@ -47,26 +45,26 @@ int main() {
   return 0;
 }
 
-int sanar(vector<int> fila, vector<int> col, vector<int> vidaInicial,
-          vector<int> vidaActual, int d, vector<vector<char>> mapa) {
+int sanar(vector<int> &fila, vector<int> &col, vector<int> &vidaInicial,
+          vector<int> &vidaActual, int d, vector<vector<char>> &mapa) {
   if (0 > fila[0] || fila[0] >= mapa.size() || 0 > col[0] ||
       col[0] >= mapa.size())
     return 0;
-  else if (POSICION(0) == 'X' || d == 0)
+  else if (POSICION(0) == 'X' || d < 0)
     return 0;
 
   POSICION(0) = 'X';
+  cout << d << endl;
+  printMapa(mapa);
   int maxHeal = 0;
 
   if (POSICION(0) != 'L')
-    for (int i = 1, size = col.size(); i < size; ++i)
+    for (int i = 0, size = col.size(); i < size; ++i)
       if ((abs(fila[0] - fila[i]) + abs(col[0] - col[i])) <= 2) {
         int posibleCuracion = vidaInicial[i] - vidaActual[i];
 
         posibleCuracion = posibleCuracion > 10 ? 10 : posibleCuracion;
         maxHeal = posibleCuracion > maxHeal ? posibleCuracion : maxHeal;
-        cout << "posibleCuracion = " << posibleCuracion << ' ';
-        cout << "maxHeal = " << maxHeal << endl;
       }
 
   fila[0] -= 1;
