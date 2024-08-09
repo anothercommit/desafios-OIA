@@ -3,20 +3,25 @@
 #include <vector>
 
 #define POSICION(i) mapa[fila[i]][col[i]]
+#define DISTANCIA(i) (abs(fila[0] - fila[i]) + abs(col[0] - col[i]))
 
 using namespace std;
 
-int sanar(vector<int> &, vector<int> &, vector<int> &, vector<int> &, int,
+int sanar(vector<int>, vector<int>, vector<int> &, vector<int> &, int,
           vector<vector<string>> &);
-string printMapa(const vector<vector<string>> &);
+
+string printMapa();
+int sanacionEnZona();
+bool luchadoresPendientes();
+
+vector<int> fila;
+vector<int> col;
+vector<int> vidaInicial;
+vector<int> vidaActual;
+vector<vector<string>> mapa;
+vector<bool> luchadoresChequeados;
 
 int main() {
-  vector<int> fila;
-  vector<int> col;
-  vector<int> vidaInicial;
-  vector<int> vidaActual;
-  vector<vector<string>> mapa;
-
   int n, r, c, d, num;
   cin >> n >> r >> c;
 
@@ -25,6 +30,7 @@ int main() {
     col.push_back((cin >> num, num));
     vidaInicial.push_back((cin >> num, num));
     vidaActual.push_back((cin >> num, num));
+    luchadoresChequeados.push_back(false);
   }
 
   cin >> d;
@@ -40,73 +46,88 @@ int main() {
   for (int i = 1; i < col.size(); ++i)
     POSICION(i) = "L";
 
-  // cout << printMapa(mapa);
-
-  cout << sanar(fila, col, vidaInicial, vidaActual, d, mapa) << '\n';
-
+  cout << "Máxima curación posible: "
+       << sanar(fila, col, vidaInicial, vidaActual, d, mapa) << '\n';
   return 0;
 }
 
-int sanar(vector<int> &fila, vector<int> &col, vector<int> &vidaInicial,
+int sanar(vector<int> fila, vector<int> col, vector<int> &vidaInicial,
           vector<int> &vidaActual, int d, vector<vector<string>> &mapa) {
   if (0 > fila[0] || fila[0] >= mapa.size() || 0 > col[0] ||
-      col[0] >= mapa[fila[0]].size())
-    return 0;
-  else if (POSICION(0) == "X" || (d == 0 && POSICION(0) == "L"))
-    return 0;
-  else if (POSICION(0) != "L" && stoi(POSICION(0)) >= d)
+      col[0] >= mapa[fila[0]].size() || POSICION(0) == "X")
     return 0;
 
-  POSICION(0) = "+";
-  cout << printMapa(mapa) << endl;
+  if (POSICION(0) != "L") {
+    if (stoi(POSICION(0)) >= d)
+      return 0;
+  } else if (d == 0)
+    return 0;
+
   POSICION(0) = to_string(d);
-  // int maxHeal = 0;
 
-  // if (POSICION(0) != 'L')
-  //   for (int i = 0, size = col.size(); i < size; ++i)
-  //     if ((abs(fila[0] - fila[i]) + abs(col[0] - col[i])) <= 2) {
-  //       int posibleCuracion = vidaInicial[i] - vidaActual[i];
-
-  //       posibleCuracion = posibleCuracion > 10 ? 10 : posibleCuracion;
-  //       maxHeal = posibleCuracion > maxHeal ? posibleCuracion : maxHeal;
-  //     }
+  int maxHeal = 0;
+  if (POSICION(0) != "L") {
+    if (luchadoresPendientes())
+      maxHeal = sanacionEnZona();
+    else
+      return 0;
+  }
 
   if (d <= 0)
-    return 0;
+    return maxHeal;
 
   fila[0] -= 1;
   int arriba = sanar(fila, col, vidaInicial, vidaActual, d - 1, mapa);
-  // if (maxHeal < arriba)
-  //   maxHeal = arriba;
+  maxHeal = maxHeal < arriba ? arriba : maxHeal;
 
   fila[0] += 1;
   col[0] += 1;
   int derecha = sanar(fila, col, vidaInicial, vidaActual, d - 1, mapa);
-  // if (derecha > maxHeal)
-  //   maxHeal = derecha;
+  maxHeal = maxHeal < derecha ? derecha : maxHeal;
 
   col[0] -= 1;
   fila[0] += 1;
   int abajo = sanar(fila, col, vidaInicial, vidaActual, d - 1, mapa);
-  // if (abajo > maxHeal)
-  //   maxHeal = abajo;
+  maxHeal = maxHeal < abajo ? abajo : maxHeal;
 
   fila[0] -= 1;
   col[0] -= 1;
   int izquierda = sanar(fila, col, vidaInicial, vidaActual, d - 1, mapa);
-  // if (maxHeal < izquierda)
-  //   maxHeal = izquierda;
+  maxHeal = maxHeal < izquierda ? izquierda : maxHeal;
 
-  // return maxHeal;
-  return 0;
+  return maxHeal;
 }
 
-string printMapa(const vector<vector<string>> &mapa) {
+int sanacionEnZona() {
+  int maxHeal = 0;
+
+  for (int i = 0, size = vidaInicial.size(); i < size; ++i) {
+    if (DISTANCIA(i) <= 2) {
+      int posibleCuracion = vidaInicial[i] - vidaActual[i];
+
+      posibleCuracion = posibleCuracion > 10 ? 10 : posibleCuracion;
+      maxHeal = posibleCuracion > maxHeal ? posibleCuracion : maxHeal;
+
+      luchadoresChequeados[i] = true;
+    }
+  }
+
+  return maxHeal;
+}
+
+bool luchadoresPendientes() {
+  for (bool chequeado : luchadoresChequeados)
+    if (!chequeado)
+      return true;
+  return false;
+}
+
+string printMapa() {
   string m;
 
   for (int f = 0, size = mapa.size(); f < size; ++f) {
     for (int c = 0, size = mapa[f].size(); c < size; ++c)
-      m += mapa[f][c] + "  ";
+      m += mapa[f][c] + "\t";
     m += '\n';
   }
   return m;
